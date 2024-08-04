@@ -1,21 +1,13 @@
-package bot
+package app
 
 import (
-	"fmt"
 	"math/rand"
-
-	"github.com/shaileshhb/tic-tac-toe/app"
 )
 
-type GameBot struct {
-	board  *app.Board
-	Player *app.Player
-}
-
-func InitializeBot(board *app.Board, mark app.Mark) *GameBot {
+func InitializeBot(board *Board, mark Mark) *GameBot {
 	return &GameBot{
 		board:  board,
-		Player: app.NewPlayer("3TBot", mark),
+		Player: NewPlayer("3TBot", mark),
 	}
 }
 
@@ -27,7 +19,6 @@ func (bot *GameBot) MakeMove() bool {
 
 	for {
 		cellNumber := bot.findBestMove()
-		fmt.Println(cellNumber)
 		if bot.board.MarkCell(cellNumber, bot.Player.Mark) {
 			return true
 		}

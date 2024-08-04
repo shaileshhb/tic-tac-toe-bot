@@ -58,7 +58,6 @@ func (b *Board) ShowBoard() {
 }
 
 func (b *Board) checkRow() bool {
-	fmt.Println("======== checking if row win ========")
 	matchFound := false
 
 	for i := 0; i < int(b.Size*b.Size); i += int(b.Size) {
@@ -81,7 +80,6 @@ func (b *Board) checkRow() bool {
 }
 
 func (b *Board) checkColumn() bool {
-	fmt.Println("======== checking if column win ========")
 	matchFound := false
 
 	for i := 0; i < int(b.Size); i++ {
@@ -105,7 +103,6 @@ func (b *Board) checkColumn() bool {
 }
 
 func (b *Board) checkDiagonal() bool {
-	fmt.Println("======== checking if diagonal win ========")
 	matchFound := false
 	startIndex := 0
 
