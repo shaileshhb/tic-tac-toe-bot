@@ -14,7 +14,6 @@ func NewBoard(size uint8) *Board {
 }
 
 func (b *Board) MarkCell(cellNumber uint8, sign Mark) bool {
-	fmt.Println(b.IsCellOccupied(cellNumber))
 	if cellNumber > (b.Size*b.Size) || b.IsCellOccupied(cellNumber) {
 		return false
 	}

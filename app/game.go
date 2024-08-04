@@ -58,7 +58,7 @@ func (g *Game) Play() {
 func getCellNumber() uint8 {
 	var i int
 	fmt.Print("Enter cell number: (number must be between 1 to 9): ")
-	_, err := fmt.Scanf("%d", &i)
+	_, err := fmt.Scanf("%d\n", &i)
 	if err != nil {
 		log.Fatal("invalid input. Please enter a number.")
 	}
