@@ -20,11 +20,11 @@ func main() {
 }
 
 func getPlayerInfo() *app.Player {
-	// fmt.Print("Enter your name: ")
-	// name := getUserInput()
+	fmt.Print("Enter your name: ")
+	name := getUserInput()
 
 	return &app.Player{
-		Name: "John doe",
+		Name: name,
 		Mark: app.O,
 	}
 }

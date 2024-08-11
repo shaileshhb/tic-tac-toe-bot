@@ -7,7 +7,7 @@ import (
 func InitializeBot(board *Board, mark Mark) *GameBot {
 	return &GameBot{
 		board:  board,
-		Player: NewPlayer("3TBot", mark),
+		Player: NewPlayer("Bot", mark),
 	}
 }
 
@@ -27,8 +27,8 @@ func (bot *GameBot) getBestMove() uint8 {
 
 	for i := 0; i < (int(board.Size * board.Size)); i++ {
 		if board.Cell[i].Mark == EmptyString {
-			board.Cell[i].Mark = bot.Player.Mark // for now its - X
-			score := bot.minimax(&board, false)
+			board.Cell[i].Mark = bot.Player.Mark
+			score := bot.minimax(&board, false, math.Inf(-1), math.Inf(1))
 			board.Cell[i].Mark = EmptyString
 			if score > bestScore {
 				bestScore = score
@@ -40,16 +40,16 @@ func (bot *GameBot) getBestMove() uint8 {
 	return uint8(bestMove)
 }
 
+// X: 1 -> maximizing player
+// O: -1 -> minimizing player
+// Tie: 0
 const (
 	MaximizeX float64 = 1
 	MinimizeO float64 = -1
 	Tie       float64 = 0
 )
 
-// X: 1 -> maximizing player
-// O: -1 -> minimizing player
-// Tie: 0
-func (bot *GameBot) minimax(board *Board, isMaximizing bool) float64 {
+func (bot *GameBot) minimax(board *Board, isMaximizing bool, alpha, beta float64) float64 {
 	result := board.CheckWin()
 	if result {
 		if isMaximizing {
@@ -71,9 +71,13 @@ func (bot *GameBot) minimax(board *Board, isMaximizing bool) float64 {
 		for i := 0; i < (int(board.Size * board.Size)); i++ {
 			if board.Cell[i].Mark == EmptyString {
 				board.Cell[i].Mark = bot.Player.Mark
-				score := bot.minimax(board, false)
+				score := bot.minimax(board, false, alpha, beta)
 				board.Cell[i].Mark = EmptyString
 				bestScore = math.Max(bestScore, score)
+				alpha = math.Max(alpha, score)
+				if beta <= alpha {
+					break
+				}
 			}
 		}
 		return bestScore
@@ -89,9 +93,13 @@ func (bot *GameBot) minimax(board *Board, isMaximizing bool) float64 {
 	for i := 0; i < (int(board.Size * board.Size)); i++ {
 		if board.Cell[i].Mark == EmptyString {
 			board.Cell[i].Mark = humanPlayerMark
-			score := bot.minimax(board, true)
+			score := bot.minimax(board, true, alpha, beta)
 			board.Cell[i].Mark = EmptyString
 			bestScore = math.Min(bestScore, score)
+			beta = math.Min(beta, score)
+			if beta <= alpha {
+				break
+			}
 		}
 	}
 
