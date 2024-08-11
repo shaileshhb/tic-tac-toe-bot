@@ -2,7 +2,6 @@ package app
 
 import (
 	"fmt"
-	"log"
 )
 
 func NewGame(player *Player, bot *GameBot, board *Board) *Game {
@@ -45,18 +44,25 @@ func (g *Game) Play() {
 }
 
 func getCellNumber() uint8 {
-	var i int
-	fmt.Print("Enter cell number: (number must be between 1 to 9): ")
-	_, err := fmt.Scanf("%d\n", &i)
-	if err != nil {
-		log.Fatal("invalid input. Please enter a number.")
-	}
+	for {
+		var i int
+		fmt.Print("Enter cell number: (number must be between 1 to 9): ")
+		_, err := fmt.Scanf("%d\n", &i)
+		if err != nil {
+			fmt.Println("invalid input. Please enter a number.")
+			// Clear the input buffer
+			var discard string
+			fmt.Scanln(&discard)
+			continue
+		}
 
-	if i < 1 || i > 9 {
-		log.Fatal("number must be between 1 and 9.")
-	}
+		if i < 1 || i > 9 {
+			fmt.Println("number must be between 1 and 9.")
+			continue
+		}
 
-	return uint8(i - 1)
+		return uint8(i - 1)
+	}
 }
 
 func (g *Game) getBoardStatus(player *Player) Result {
