@@ -1,7 +1,9 @@
 package app
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 )
 
 func NewGame(player *Player, bot *GameBot, board *Board) *Game {
@@ -71,6 +73,10 @@ func (g *Game) getBoardStatus(player *Player) Result {
 		fmt.Println("====================================")
 		fmt.Printf("%s has won this round.\n", player.Name)
 		fmt.Println("====================================")
+		fmt.Println("Press 'Enter' to exit...")
+
+		// Wait for the user to press 'Enter'
+		bufio.NewReader(os.Stdin).ReadBytes('\n')
 		return Win
 	}
 
@@ -78,6 +84,10 @@ func (g *Game) getBoardStatus(player *Player) Result {
 		fmt.Println("====================================")
 		fmt.Println("It's a tie!")
 		fmt.Println("====================================")
+		fmt.Println("Press 'Enter' to exit...")
+
+		// Wait for the user to press 'Enter'
+		bufio.NewReader(os.Stdin).ReadBytes('\n')
 		return Draw
 	}
 
