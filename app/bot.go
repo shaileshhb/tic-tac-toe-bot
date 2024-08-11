@@ -1,7 +1,7 @@
 package app
 
 import (
-	"math/rand"
+	"math"
 )
 
 func InitializeBot(board *Board, mark Mark) *GameBot {
@@ -12,21 +12,100 @@ func InitializeBot(board *Board, mark Mark) *GameBot {
 }
 
 func (bot *GameBot) MakeMove() bool {
-
 	if bot.board.IsBoardFull() {
 		return false
 	}
 
-	for {
-		cellNumber := bot.findBestMove()
-		if bot.board.MarkCell(cellNumber, bot.Player.Mark) {
-			return true
-		}
-	}
+	cellNumber := bot.getBestMove()
+	return bot.board.MarkCell(cellNumber, bot.Player.Mark)
 }
 
-func (bot *GameBot) findBestMove() uint8 {
-	// Seed the random number generator to ensure different results each run
-	randomNumber := rand.Intn(int(bot.board.Size * bot.board.Size))
-	return uint8(randomNumber)
+func (bot *GameBot) getBestMove() uint8 {
+	bestScore := math.Inf(-1)
+	bestMove := -1
+	board := *bot.board
+
+	for i := 0; i < (int(board.Size * board.Size)); i++ {
+		if board.Cell[i].Mark == EmptyString {
+			board.Cell[i].Mark = bot.Player.Mark // for now its - X
+			score := bot.minimax(&board, false)
+			board.Cell[i].Mark = EmptyString
+			if score > bestScore {
+				bestScore = score
+				bestMove = i
+			}
+		}
+	}
+
+	return uint8(bestMove)
+}
+
+const (
+	MaximizeX float64 = 1
+	MinimizeO float64 = -1
+	Tie       float64 = 0
+)
+
+// X: 1 -> maximizing player
+// O: -1 -> minimizing player
+// Tie: 0
+func (bot *GameBot) minimax(board *Board, isMaximizing bool) float64 {
+	result := board.CheckWin()
+	if result {
+		if isMaximizing {
+			score := MinimizeO * (float64(bot.getNumberOfSquares(board) + 1))
+			return score
+		}
+
+		score := MaximizeX * (float64(bot.getNumberOfSquares(board) + 1))
+		return score
+	}
+
+	if board.IsBoardFull() {
+		return Tie
+	}
+
+	if isMaximizing {
+		bestScore := math.Inf(-1)
+
+		for i := 0; i < (int(board.Size * board.Size)); i++ {
+			if board.Cell[i].Mark == EmptyString {
+				board.Cell[i].Mark = bot.Player.Mark
+				score := bot.minimax(board, false)
+				board.Cell[i].Mark = EmptyString
+				bestScore = math.Max(bestScore, score)
+			}
+		}
+		return bestScore
+	}
+
+	bestScore := math.Inf(1)
+
+	humanPlayerMark := X
+	if bot.Player.Mark == X {
+		humanPlayerMark = O
+	}
+
+	for i := 0; i < (int(board.Size * board.Size)); i++ {
+		if board.Cell[i].Mark == EmptyString {
+			board.Cell[i].Mark = humanPlayerMark
+			score := bot.minimax(board, true)
+			board.Cell[i].Mark = EmptyString
+			bestScore = math.Min(bestScore, score)
+		}
+	}
+
+	return bestScore
+}
+
+func (bot *GameBot) getNumberOfSquares(board *Board) int {
+	counter := 0
+
+	for _, cell := range board.Cell {
+		if cell.Mark == EmptyString {
+			counter++
+		}
+	}
+
+	return counter
 }

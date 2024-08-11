@@ -5,51 +5,40 @@ import (
 	"log"
 )
 
-func NewGame(playerOne *Player, bot *GameBot, board *Board) *Game {
+func NewGame(player *Player, bot *GameBot, board *Board) *Game {
 	return &Game{
-		PlayerOne: playerOne,
-		Bot:       bot,
-		Board:     board,
+		Player: player,
+		Bot:    bot,
+		Board:  board,
 	}
 }
 
 func (g *Game) Play() {
 	for {
-		cellNumber := getCellNumber()
-		g.Board.MarkCell(cellNumber, g.PlayerOne.Mark)
+		for {
+			botMove := g.Bot.MakeMove()
+			if botMove {
+				break
+			}
+		}
 
-		g.Board.ShowBoard()
-		if g.Board.CheckWin() {
-			fmt.Println("====================================")
-			fmt.Println("Hurray!! You have won!")
-			fmt.Println("====================================")
+		status := g.getBoardStatus(g.Bot.Player)
+		if status != InProcess {
 			return
 		}
 
-		if g.Board.IsBoardFull() {
-			fmt.Println("====================================")
-			fmt.Println("It's a tie!")
-			fmt.Println("====================================")
-			return
+		var cellNumber uint8
+		for {
+			cellNumber = getCellNumber()
+			if !g.Board.IsCellOccupied(cellNumber) {
+				break
+			}
+			fmt.Println("This cell is occupied. Please choose another cell")
 		}
+		g.Board.MarkCell(cellNumber, g.Player.Mark)
 
-		botMove := g.Bot.MakeMove()
-		if !botMove {
-			log.Fatal("some error occurred while bot was playing.")
-		}
-
-		g.Board.ShowBoard()
-		if g.Board.CheckWin() {
-			fmt.Println("====================================")
-			fmt.Println("Better luck next time! Bot has won this round.")
-			fmt.Println("====================================")
-			return
-		}
-
-		if g.Board.IsBoardFull() {
-			fmt.Println("====================================")
-			fmt.Println("It's a tie!")
-			fmt.Println("====================================")
+		status = g.getBoardStatus(g.Bot.Player)
+		if status != InProcess {
 			return
 		}
 	}
@@ -68,4 +57,23 @@ func getCellNumber() uint8 {
 	}
 
 	return uint8(i - 1)
+}
+
+func (g *Game) getBoardStatus(player *Player) Result {
+	g.Board.ShowBoard()
+	if g.Board.CheckWin() {
+		fmt.Println("====================================")
+		fmt.Printf("%s has won this round.\n", player.Name)
+		fmt.Println("====================================")
+		return Win
+	}
+
+	if g.Board.IsBoardFull() {
+		fmt.Println("====================================")
+		fmt.Println("It's a tie!")
+		fmt.Println("====================================")
+		return Draw
+	}
+
+	return InProcess
 }

@@ -31,7 +31,12 @@ func (b *Board) CheckWin() bool {
 }
 
 func (b *Board) IsBoardFull() bool {
-	return false
+	for i := 0; i < (int(b.Size * b.Size)); i++ {
+		if b.Cell[i].Mark == EmptyString {
+			return false
+		}
+	}
+	return true
 }
 
 func (b *Board) ShowBoard() {

@@ -5,11 +5,18 @@ import (
 )
 
 type Mark string
+type Result string
 
 const (
 	X           Mark = "X"
 	O           Mark = "O"
 	EmptyString Mark = ""
+)
+
+const (
+	Win       Result = "win"
+	Draw      Result = "draw"
+	InProcess Result = "in-process"
 )
 
 func (m Mark) Validate() error {
@@ -44,7 +51,7 @@ type GameBot struct {
 }
 
 type Game struct {
-	PlayerOne *Player
+	Player    *Player
 	PlayerTwo *Player
 	Bot       *GameBot
 	Board     *Board
