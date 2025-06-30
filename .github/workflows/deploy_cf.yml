@@ -23,7 +23,7 @@ jobs:
 
       - name: Install Cloud Foundry CLI
         run: |
-          wget -q https://packages.cloudfoundry.org/stable?release=linux64 -O cf-cli.tgz
+          wget -q https://packages.cloudfoundry.org/stable?release=linuxarm64-binary&version=v8 -O cf-cli.tgz
           tar -xzf cf-cli.tgz
           sudo mv cf /usr/local/bin
           cf version
