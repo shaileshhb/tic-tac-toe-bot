@@ -1,0 +1,35 @@
+name: CD to SAP BTP Cloud Foundry
+
+on:
+  push:
+    branches:
+      - main  # or your deployment branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'  # Use your preferred version
+
+      - name: Build the Go application
+        run: go build -o app .
+
+      - name: Install Cloud Foundry CLI
+        run: |
+          wget -q https://packages.cloudfoundry.org/stable?release=linux64 -O cf-cli.tgz
+          tar -xzf cf-cli.tgz
+          sudo mv cf /usr/local/bin
+          cf version
+
+      - name: Login to Cloud Foundry
+        run: |
+          cf api ${{ secrets.CF_API }} --skip-ssl-validation
+          cf auth ${{ secrets.CF_USERNAME }} ${{ secrets.CF_PASSWORD }}
+          cf target -o ${{ secrets.CF_ORG }} -s ${{ secrets.CF_SPACE }}
