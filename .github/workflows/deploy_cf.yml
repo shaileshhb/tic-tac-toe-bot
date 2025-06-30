@@ -25,8 +25,9 @@ jobs:
 
       - name: Install Cloud Foundry CLI
         run: |
-          curl -L "https://packages.cloudfoundry.org/stable/cf8-cli_8.0.0_linux_x86-64.tgz" -o cf-cli.tgz
-          tar -xzf cf-cli.tgz
+          curl -LO "https://packages.cloudfoundry.org/stable/cf8-cli_8.0.0_linux_x86-64.tgz"
+          file cf8-cli_8.0.0_linux_x86-64.tgz
+          tar -xzf cf8-cli_8.0.0_linux_x86-64.tgz
           chmod +x cf
           sudo mv cf /usr/local/bin/cf
           cf version
