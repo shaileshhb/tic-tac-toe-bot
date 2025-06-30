@@ -1,8 +1,10 @@
 name: SAP BTP CF Login Test
 
 on:
-  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
-
+  push:
+    branches:
+      - main
+      
 jobs:
   login-to-cf:
     runs-on: ubuntu-latest
