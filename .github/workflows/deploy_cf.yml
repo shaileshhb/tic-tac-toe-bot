@@ -1,39 +1,35 @@
-name: CD to SAP BTP Cloud Foundry
+name: SAP BTP CF Login Test
 
 on:
-  push:
-    branches:
-      - main  # or your deployment branch
+  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
 
 jobs:
-  deploy:
+  login-to-cf:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.22'  # Use your preferred version
-
-      - name: Install required dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y curl ca-certificates tar
+        uses: actions/checkout@v4
 
       - name: Install Cloud Foundry CLI
         run: |
-          curl -LO "https://packages.cloudfoundry.org/stable/cf8-cli_8.0.0_linux_x86-64.tgz"
-          file cf8-cli_8.0.0_linux_x86-64.tgz
-          tar -xzf cf8-cli_8.0.0_linux_x86-64.tgz
-          chmod +x cf
-          sudo mv cf /usr/local/bin/cf
-          cf version
+          # Add the Cloud Foundry tap and install the CLI
+          sudo apt-get update
+          sudo apt-get install -y wget
+          wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | sudo gpg --dearmor -o /usr/share/keyrings/cli.cloudfoundry.org.gpg
+          echo "deb [signed-by=/usr/share/keyrings/cli.cloudfoundry.org.gpg] https://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list
+          sudo apt-get update
+          sudo apt-get install -y cf8-cli
 
-      - name: Login to Cloud Foundry
+      - name: Verify CF CLI installation
+        run: cf version
+
+      - name: Log in to Cloud Foundry
         run: |
-          cf api ${{ secrets.CF_API }} --skip-ssl-validation
-          cf auth ${{ secrets.CF_USERNAME }} ${{ secrets.CF_PASSWORD }}
-          cf target -o ${{ secrets.CF_ORG }} -s ${{ secrets.CF_SPACE }}
+          cf login -a ${{ secrets.CF_API_ENDPOINT }} -u ${{ secrets.CF_USERNAME }} -p ${{ secrets.CF_PASSWORD }} -o ${{ secrets.CF_ORG }} -s ${{ secrets.CF_SPACE }}
+        env:
+          CF_API_ENDPOINT: ${{ secrets.CF_API_ENDPOINT }}
+          CF_USERNAME: ${{ secrets.CF_USERNAME }}
+          CF_PASSWORD: ${{ secrets.CF_PASSWORD }}
+          CF_ORG: ${{ secrets.CF_ORG }}
+          CF_SPACE: ${{ secrets.CF_SPACE }}
