@@ -18,6 +18,13 @@ jobs:
         with:
           go-version: '1.22'  # Use your preferred version
 
+      - name: Install required dependencies
+        run: |
+          apk add --no-cache \
+          curl \
+          ca-certificates \
+          tar
+
       - name: Install Cloud Foundry CLI
         run: |
           curl -L "https://packages.cloudfoundry.org/stable?release=linuxarm64-binary&version=v8" -o cf-cli.tgz
