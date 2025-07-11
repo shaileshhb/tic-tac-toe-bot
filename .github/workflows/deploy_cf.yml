@@ -1,4 +1,4 @@
-name: SAP BTP CF Login Test
+name: Deployment to Cloud Foundry
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  login-to-cf:
+  deploy-to-cf:
     runs-on: ubuntu-latest
 
     steps:
@@ -52,3 +52,8 @@ jobs:
 
           echo "List of protoc plugins in PATH:"
           ls -l $(go env GOPATH)/bin | grep protoc-gen
+
+      - name: Go Build
+        run: |
+          GOOS=linux GOARCH=amd64 
+          go build
