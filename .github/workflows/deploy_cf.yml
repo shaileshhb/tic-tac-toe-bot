@@ -36,7 +36,7 @@ jobs:
       
       - name: Install protoc-gen-go
         run: |
-          go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.34
+          go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.6
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
       
       - name: Verify protoc and plugins
