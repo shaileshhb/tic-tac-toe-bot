@@ -38,3 +38,17 @@ jobs:
         run: |
           go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.34
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+      
+      - name: Verify protoc and plugins
+        run: |
+          echo "Protoc version:"
+          protoc --version
+
+          echo "Check protoc-gen-go location:"
+          which protoc-gen-go || echo "protoc-gen-go not found"
+
+          echo "Protoc-gen-go version (if available):"
+          protoc-gen-go --version || echo "protoc-gen-go doesn't support --version"
+
+          echo "List of protoc plugins in PATH:"
+          ls -l $(go env GOPATH)/bin | grep protoc-gen
