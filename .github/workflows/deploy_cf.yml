@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      
+
 jobs:
   login-to-cf:
     runs-on: ubuntu-latest
@@ -25,13 +25,16 @@ jobs:
 
       - name: Verify CF CLI installation
         run: cf version
-
-      - name: Log in to Cloud Foundry
+      
+      - name: Install protoc
         run: |
-          cf login -a ${{ secrets.CF_API_ENDPOINT }} -u ${{ secrets.CF_USERNAME }} -p ${{ secrets.CF_PASSWORD }} -o ${{ secrets.CF_ORG }} -s ${{ secrets.CF_SPACE }}
-        env:
-          CF_API_ENDPOINT: ${{ secrets.CF_API_ENDPOINT }}
-          CF_USERNAME: ${{ secrets.CF_USERNAME }}
-          CF_PASSWORD: ${{ secrets.CF_PASSWORD }}
-          CF_ORG: ${{ secrets.CF_ORG }}
-          CF_SPACE: ${{ secrets.CF_SPACE }}
+          PROTOC_ZIP=protoc-25.2-linux-x86_64.zip
+          curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v25.2/$PROTOC_ZIP
+          sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc
+          sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*'
+          rm -f $PROTOC_ZIP
+      
+      - name: Install protoc-gen-go
+        run: |
+          go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.34
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
