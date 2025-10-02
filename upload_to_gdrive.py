@@ -1,46 +1,29 @@
-import os
-import json
-from datetime import datetime
-from google.oauth2 import service_account
+import os, sys, json, datetime
+from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
-# Write the service account JSON from environment variable to a temp file
-with open("sa.json", "w") as f:
-    f.write(os.environ["GOOGLE_CREDENTIALS"])
+if len(sys.argv) < 2:
+    print("Usage: python upload_to_gdrive.py <file>")
+    exit(1)
 
-# Load credentials from the temp file
-creds = service_account.Credentials.from_service_account_file(
-    "sa.json",
-    scopes=["https://www.googleapis.com/auth/drive.file"],
-)
+file_path = sys.argv[1]
 
-# Build the Google Drive API service
+# Load OAuth creds
+creds_dict = json.loads(os.environ["GOOGLE_CREDENTIALS"])
+creds = Credentials.from_authorized_user_info(creds_dict, scopes=["https://www.googleapis.com/auth/drive.file"])
+
 drive_service = build("drive", "v3", credentials=creds)
 
-# Rename the file with today's date
-today = datetime.now().strftime("%Y%m%d")
-file_name = f"myapp-{today}"
-
-if os.path.isfile("myapp"):
-    print("yes it exists")
-else:
-    print("no it does not exist")
-
-# Google Drive folder ID (replace with your actual folder ID)
+# Folder ID from your "build-files"
 FOLDER_ID = os.environ["FOLDER_ID"]
 
-# Upload the build file
+today = datetime.datetime.now().strftime("%Y-%m-%d")
 file_metadata = {
-    "name": file_name,
+    "name": f"{today}-{os.path.basename(file_path)}",
     "parents": [FOLDER_ID]
 }
-media = MediaFileUpload("myapp", resumable=True)
+media = MediaFileUpload(file_path, resumable=True)
 
-file = drive_service.files().create(
-    body=file_metadata,
-    media_body=media,
-    fields="id"
-).execute()
-
-print(f"Uploaded File ID: {file.get('id')}")
+file = drive_service.files().create(body=file_metadata, media_body=media, fields="id").execute()
+print(f"Uploaded {file_path} to Google Drive with ID: {file.get('id')}")

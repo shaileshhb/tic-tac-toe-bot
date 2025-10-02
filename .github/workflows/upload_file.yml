@@ -19,12 +19,15 @@ jobs:
           go-version: '1.22'
 
       - name: Build Go app
-        run: go build -o myapp .
+        run: go build -o build/myapp .
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
+      - name: Zip build folder
+        run: zip -r build-${{ github.sha }}.zip ./build
 
       - name: Install Python dependencies
         run: |
@@ -35,4 +38,4 @@ jobs:
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
           FOLDER_ID: ${{ secrets.GCP_FOLDER_ID }}
-        run: python upload_to_gdrive.py
+        run: python upload_to_gdrive.py build-${{ github.sha }}.zip
