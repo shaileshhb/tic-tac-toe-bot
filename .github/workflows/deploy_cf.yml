@@ -1,9 +1,9 @@
 name: Deployment to Cloud Foundry
 
-on:
-  push:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
 
 jobs:
   deploy-to-cf:
@@ -54,6 +54,7 @@ jobs:
           ls -l $(go env GOPATH)/bin | grep protoc-gen
 
       - name: Go Build
+        uses: actions/setup-go@v5
         run: |
           GOOS=linux GOARCH=amd64 
           go build
