@@ -54,7 +54,6 @@ jobs:
           ls -l $(go env GOPATH)/bin | grep protoc-gen
 
       - name: Go Build
-        uses: actions/setup-go@v5
         run: |
           GOOS=linux GOARCH=amd64 
           go build
