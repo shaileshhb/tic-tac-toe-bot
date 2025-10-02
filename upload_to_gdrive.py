@@ -23,7 +23,7 @@ today = datetime.now().strftime("%Y%m%d")
 file_name = f"myapp-{today}"
 
 # Google Drive folder ID (replace with your actual folder ID)
-FOLDER_ID = "YOUR_FOLDER_ID"
+FOLDER_ID = os.environ["FOLDER_ID"]
 
 # Upload the build file
 file_metadata = {
