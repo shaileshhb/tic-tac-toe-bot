@@ -22,6 +22,11 @@ drive_service = build("drive", "v3", credentials=creds)
 today = datetime.now().strftime("%Y%m%d")
 file_name = f"myapp-{today}"
 
+if os.path.isfile("myapp"):
+    print("yes it exists")
+else:
+    print("no it does not exist")
+
 # Google Drive folder ID (replace with your actual folder ID)
 FOLDER_ID = os.environ["FOLDER_ID"]
 
