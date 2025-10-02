@@ -1,31 +1,31 @@
-name: Deployment to Cloud Foundry
+name: Build and Upload
 
 on:
   push:
     branches:
-      - main
+      - deployment
 
 jobs:
-  deploy-to-cf:
+  build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Build Go app
+        run: go build -o myapp .
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Go Build
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.22'
-        run: |
-          GOOS=linux GOARCH=amd64 
-          go build
-      
       - name: Upload to Google Drive
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
