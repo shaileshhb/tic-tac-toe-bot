@@ -1,31 +1,41 @@
-import os, json
+import os
+import json
 from datetime import datetime
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
-# Load service account credentials from env variable
-creds_info = json.loads(os.environ["GOOGLE_CREDENTIALS"])
-creds = service_account.Credentials.from_service_account_info(
-    creds_info,
+# Write the service account JSON from environment variable to a temp file
+with open("sa.json", "w") as f:
+    f.write(os.environ["GOOGLE_CREDENTIALS"])
+
+# Load credentials from the temp file
+creds = service_account.Credentials.from_service_account_file(
+    "sa.json",
     scopes=["https://www.googleapis.com/auth/drive.file"],
 )
 
-# Build the Drive API service
+# Build the Google Drive API service
 drive_service = build("drive", "v3", credentials=creds)
 
-# Get today's date and set file name
+# Rename the file with today's date
 today = datetime.now().strftime("%Y%m%d")
 file_name = f"myapp-{today}"
 
+# Google Drive folder ID (replace with your actual folder ID)
+FOLDER_ID = "YOUR_FOLDER_ID"
+
 # Upload the build file
-file_metadata = {"name": file_name}
+file_metadata = {
+    "name": file_name,
+    "parents": [FOLDER_ID]
+}
 media = MediaFileUpload("myapp", resumable=True)
 
 file = drive_service.files().create(
-    body={**file_metadata, "parents": os.environ["FOLDER_ID"]},  # Replace with actual folder ID
+    body=file_metadata,
     media_body=media,
     fields="id"
 ).execute()
 
-print("Uploaded File ID:", file.get("id"))
+print(f"Uploaded File ID: {file.get('id')}")
